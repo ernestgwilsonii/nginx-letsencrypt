@@ -6,7 +6,6 @@ services:
     # https://hub.docker.com/_/nginx/
     image: nginx:1.15.0
     hostname: nginx
-    container_name: nginx
     ports:
       # HTTP TCP 80
       - mode: host
