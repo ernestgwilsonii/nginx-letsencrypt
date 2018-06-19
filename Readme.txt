@@ -1,6 +1,11 @@
 # REF: https://www.humankode.com/ssl/how-to-set-up-free-ssl-certificates-from-lets-encrypt-using-docker-and-nginx
 # NOTES: https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/?utm_source=tool.lu
 
+# Prerequisites:
+# Setup DNS A records
+# Setup DNS CAA record (0 issue "letsencrypt.org") - https://blog.qualys.com/ssllabs/2017/03/13/caa-mandated-by-cabrowser-forum
+
+
 # Git clone or git pull
 cd /opt/docker-compose/nginx-letsencrypt
 # git clone https://github.com/ernestgwilsonii/nginx-letsencrypt.git
@@ -57,6 +62,14 @@ certbot/certbot certonly --webroot \
 docker stack rm letsencrypt-starter
 
 
+# Use: Forward Secrecy & Diffie Hellman Ephemeral Parameters
+# REF: https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html#Forward_Secrecy_&_Diffie_Hellman_Ephemeral_Parameters
+openssl dhparam -out /opt/nginx/ssl/archive/sitesexpress.com/dhparam.pem 4096
+chmod a+r /opt/nginx/ssl/archive/sitesexpress.com/dhparam.pem
+ln -s ../../archive/sitesexpress.com/dhparam.pem /opt/nginx/ssl/live/sitesexpress.com/dhparam.pem
+ls  -alF /opt/nginx/ssl/live/sitesexpress.com/
+
+
 # Copy in (overwrite) with a "PROD" NGING config kit
 cp conf.d/prod.conf  /opt/nginx/conf.d/nginx.conf
 chmod a+r /opt/nginx/conf.d/nginx.conf
@@ -101,6 +114,8 @@ docker service ls | grep nginx-letsencrypt_nginx
 docker service logs -f nginx-letsencrypt_nginx
 
 # Visit site and verify real SSL cert
-https://sitesexpress.com/.well-known/acme-challenge/index.html
+# https://sitesexpress.com/.well-known/acme-challenge/index.html
+
+# SSL Scan: https://www.ssllabs.com/ssltest/analyze.html?d=www.sitesexpress.com&hideResults=on
 
 
