@@ -119,3 +119,10 @@ docker service logs -f nginx-letsencrypt_nginx
 # SSL Scan: https://www.ssllabs.com/ssltest/analyze.html?d=www.sitesexpress.com&hideResults=on
 
 
+# Setup auto-renew for SSL certs!
+# Photon 2x OS install cronie
+#tdnf -y install chronie
+crontab -e
+0 23 * * * docker run --rm -it --name certbot -v "/opt/nginx/letsencrypt:/data/letsencrypt" -v "/opt/nginx/ssl:/etc/letsencrypt" -v "/opt/nginx/ssl/lib:/var/lib/letsencrypt" -v "/opt/nginx/ssl/log:/var/log/letsencrypt" certbot/certbot renew --quiet
+
+
